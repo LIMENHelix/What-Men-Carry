@@ -13,7 +13,11 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Adding Videos
+## Videos
+
+All videos are **silent and cinematic** — muted on load, looping continuously. They play automatically as you scroll, pausing when out of view.
+
+### Adding Videos
 
 Videos live in `~/Desktop/GROK Videos/` on your machine.
 

@@ -15,7 +15,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Videos
 
-All videos are **silent and cinematic** — muted on load, looping continuously. They play automatically as you scroll, pausing when out of view.
+Videos are cinematic and visual-first — they play silently by default as you scroll. Each video can have an optional **Grok voiceover** (dramatic reading of the quote). Viewers enable audio with a click (bottom-left corner button).
 
 ### Adding Videos
 
@@ -25,15 +25,30 @@ Videos live in `~/Desktop/GROK Videos/` on your machine.
 
 1. Drop a new video file into `~/Desktop/GROK Videos/`
 2. Run `npm run sync-videos`
-3. Edit `content/videos.json` and fill in the title and theme
-4. (Optional) Add the YouTube video ID if the video is uploaded to YouTube
-5. Run `npm run dev` to preview
+3. Edit `content/videos.json` and fill in the quote and theme
+4. (Optional) Add the YouTube video ID
+5. **Generate a Grok voiceover** (see below)
+6. Run `npm run dev` to preview
 
 The sync script will:
 - Copy the video to `/public/videos/`
 - Generate a poster image
 - Optimize the video for web (if ffmpeg is available)
-- Add a stub entry to `videos.json`
+- Add a stub entry to `videos.json` with `audioFile` field
+
+### Generating Voiceovers with Grok
+
+Use Grok to generate a dramatic audio reading of each quote:
+
+1. Go to [Grok](https://grok.com) and ask it to generate speech:
+   > "Generate a dramatic, emotional voiceover MP3 of this quote, 15-20 seconds, male voice, serious tone: [QUOTE HERE]"
+   
+2. Download the MP3 and save it to: `public/audio/{slug}-voiceover.mp3`
+   - Example: `public/audio/she-held-his-hand-voiceover.mp3`
+
+3. The quote is read with intention and restraint—no music, just voice and silence.
+
+Viewers can toggle audio on/off with the button in the bottom-left corner of each video.
 
 ### Video Metadata
 

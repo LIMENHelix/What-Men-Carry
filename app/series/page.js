@@ -27,6 +27,7 @@ export default function Series() {
                 quote={video.quote}
                 file={video.file}
                 poster={video.poster}
+                audioFile={video.audioFile}
                 youtubeId={video.youtubeId}
               />
             ))}

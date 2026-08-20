@@ -5,10 +5,11 @@ const { execSync } = require('child_process');
 const GROK_VIDEOS_PATH = 'C:\\Users\\Chris\\Desktop\\GROK Videos';
 const PUBLIC_VIDEOS_PATH = path.join(process.cwd(), 'public', 'videos');
 const POSTERS_PATH = path.join(process.cwd(), 'public', 'posters');
+const AUDIO_PATH = path.join(process.cwd(), 'public', 'audio');
 const VIDEOS_JSON = path.join(process.cwd(), 'content', 'videos.json');
 
 // Ensure directories exist
-[PUBLIC_VIDEOS_PATH, POSTERS_PATH].forEach((dir) => {
+[PUBLIC_VIDEOS_PATH, POSTERS_PATH, AUDIO_PATH].forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -137,6 +138,7 @@ function syncVideos() {
         quote: `[Add quote here] "${slug}"`,
         theme: '[Add theme here]',
         poster: `/posters/${slug}.jpg`,
+        audioFile: `${slug}-voiceover.mp3`,
         youtubeId: '',
         date: new Date().toISOString().split('T')[0],
       };
@@ -145,6 +147,7 @@ function syncVideos() {
       newVideosAdded++;
 
       console.log(`→ Added to videos.json (edit the quote and theme)`);
+      console.log(`→ Next: Use Grok to generate voiceover for "${slug}" and save to: public/audio/${slug}-voiceover.mp3`);
     }
   });
 

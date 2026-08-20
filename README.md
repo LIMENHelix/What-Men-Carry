@@ -36,19 +36,29 @@ The sync script will:
 - Optimize the video for web (if ffmpeg is available)
 - Add a stub entry to `videos.json` with `audioFile` field
 
-### Generating Voiceovers with Grok
+### Generating Voiceovers with Grok API
 
-Use Grok to generate a dramatic audio reading of each quote:
+Voiceovers are generated automatically via Grok's voice synthesis API:
 
-1. Go to [Grok](https://grok.com) and ask it to generate speech:
-   > "Generate a dramatic, emotional voiceover MP3 of this quote, 15-20 seconds, male voice, serious tone: [QUOTE HERE]"
-   
-2. Download the MP3 and save it to: `public/audio/{slug}-voiceover.mp3`
-   - Example: `public/audio/she-held-his-hand-voiceover.mp3`
+1. Set your Grok API key:
+   ```bash
+   export GROK_API_KEY=your_api_key_here
+   ```
 
-3. The quote is read with intention and restraint—no music, just voice and silence.
+2. Fill in the quote in `content/videos.json`
 
-Viewers can toggle audio on/off with the button in the bottom-left corner of each video.
+3. Run sync-videos:
+   ```bash
+   npm run sync-videos
+   ```
+
+The script will:
+- Copy videos to `/public/videos/`
+- Generate poster images
+- **Auto-generate voiceovers** via Grok API (dramatic, emotional read)
+- Create `public/audio/{slug}-voiceover.mp3` files
+
+Viewers toggle audio on/off with the speaker button (bottom-left corner) on each video. Videos play silently by default; voiceover is opt-in.
 
 ### Video Metadata
 

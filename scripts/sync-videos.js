@@ -1,12 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const https = require('https');
 
 const GROK_VIDEOS_PATH = 'C:\\Users\\Chris\\Desktop\\GROK Videos';
 const PUBLIC_VIDEOS_PATH = path.join(process.cwd(), 'public', 'videos');
 const POSTERS_PATH = path.join(process.cwd(), 'public', 'posters');
 const AUDIO_PATH = path.join(process.cwd(), 'public', 'audio');
 const VIDEOS_JSON = path.join(process.cwd(), 'content', 'videos.json');
+
+// Grok API configuration
+const GROK_API_KEY = process.env.GROK_API_KEY;
 
 // Ensure directories exist
 [PUBLIC_VIDEOS_PATH, POSTERS_PATH, AUDIO_PATH].forEach((dir) => {
@@ -24,6 +28,75 @@ function toSlug(filename) {
     .replace(/^-+|-+$/g, '');
 }
 
+// Generate voiceover using Grok API
+async function generateVoiceover(quote, slug) {
+  const audioPath = path.join(AUDIO_PATH, `${slug}-voiceover.mp3`);
+
+  if (fs.existsSync(audioPath)) {
+    console.log(`✓ Voiceover already exists: ${slug}-voiceover.mp3`);
+    return true;
+  }
+
+  if (!GROK_API_KEY) {
+    console.log(`⚠ Skipping voiceover: GROK_API_KEY not set`);
+    console.log(`  To generate audio, set: export GROK_API_KEY=your_key && npm run sync-videos`);
+    return false;
+  }
+
+  try {
+    const requestBody = JSON.stringify({
+      model: 'grok-2-vision-1212',
+      input: quote,
+      voice: 'onyx',
+      response_format: 'mp3',
+      speed: 0.95,
+    });
+
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'api.x.ai',
+        path: '/v1/audio/speech',
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GROK_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(requestBody),
+        },
+      };
+
+      const req = https.request(options, (res) => {
+        let data = Buffer.alloc(0);
+
+        res.on('data', (chunk) => {
+          data = Buffer.concat([data, chunk]);
+        });
+
+        res.on('end', () => {
+          if (res.statusCode === 200) {
+            fs.writeFileSync(audioPath, data);
+            console.log(`✓ Generated voiceover: ${slug}-voiceover.mp3`);
+            resolve(true);
+          } else {
+            console.log(`⚠ Grok API error (${res.statusCode}): could not generate audio for ${slug}`);
+            resolve(false);
+          }
+        });
+      });
+
+      req.on('error', (error) => {
+        console.log(`⚠ Network error: ${error.message}`);
+        resolve(false);
+      });
+
+      req.write(requestBody);
+      req.end();
+    });
+  } catch (error) {
+    console.log(`⚠ Error generating voiceover: ${error.message}`);
+    return false;
+  }
+}
+
 // Copy video file
 function copyVideo(sourcePath, slug) {
   const destPath = path.join(PUBLIC_VIDEOS_PATH, `${slug}.mp4`);
@@ -39,12 +112,11 @@ function copyVideo(sourcePath, slug) {
 function generatePoster(videoFile, slug) {
   const posterPath = path.join(POSTERS_PATH, `${slug}.jpg`);
   if (fs.existsSync(posterPath)) {
-    return false; // Already exists
+    return false;
   }
 
   try {
     const videoPath = path.join(PUBLIC_VIDEOS_PATH, videoFile);
-    // Extract first frame at 1 second or beginning
     execSync(
       `ffmpeg -i "${videoPath}" -ss 0 -vframes 1 -q:v 2 "${posterPath}"`,
       { stdio: 'pipe' }
@@ -57,7 +129,7 @@ function generatePoster(videoFile, slug) {
   }
 }
 
-// Optimize video for web (optional, if ffmpeg available)
+// Optimize video for web (optional)
 function optimizeVideo(videoFile, slug) {
   try {
     const sourcePath = path.join(PUBLIC_VIDEOS_PATH, videoFile);
@@ -74,13 +146,12 @@ function optimizeVideo(videoFile, slug) {
     console.log(`✓ Optimized: ${slug}-optimized.mp4`);
     return true;
   } catch (error) {
-    // Optimization failed, use original
     return false;
   }
 }
 
 // Main sync function
-function syncVideos() {
+async function syncVideos() {
   if (!fs.existsSync(GROK_VIDEOS_PATH)) {
     console.error(`Error: Grok Videos folder not found at ${GROK_VIDEOS_PATH}`);
     process.exit(1);
@@ -112,26 +183,21 @@ function syncVideos() {
   let newVideosAdded = 0;
 
   // Process each video
-  videoFiles.forEach((file) => {
+  for (const file of videoFiles) {
     const slug = toSlug(path.parse(file).name);
     const sourcePath = path.join(GROK_VIDEOS_PATH, file);
 
     if (existingSlugs.has(slug)) {
       console.log(`Already synced: ${slug}`);
-      return;
+      continue;
     }
 
     console.log(`\nProcessing: ${file}`);
 
-    // Copy video
     if (copyVideo(sourcePath, slug)) {
-      // Generate poster
       generatePoster(`${slug}.mp4`, slug);
-
-      // Try to optimize (optional)
       optimizeVideo(`${slug}.mp4`, slug);
 
-      // Add to videos.json
       const newVideo = {
         slug,
         file: `${slug}.mp4`,
@@ -145,11 +211,9 @@ function syncVideos() {
 
       videosData.push(newVideo);
       newVideosAdded++;
-
       console.log(`→ Added to videos.json (edit the quote and theme)`);
-      console.log(`→ Next: Use Grok to generate voiceover for "${slug}" and save to: public/audio/${slug}-voiceover.mp3`);
     }
-  });
+  }
 
   // Write updated videos.json
   if (newVideosAdded > 0) {
@@ -159,10 +223,18 @@ function syncVideos() {
     console.log('\nNo new videos to sync.');
   }
 
-  console.log('\nNext steps:');
-  console.log('1. Edit content/videos.json and fill in the title and theme for new videos');
-  console.log('2. Add youtubeId if the video is on YouTube');
-  console.log('3. Run: npm run dev');
+  // Generate voiceovers for all videos that have quotes
+  console.log('\n--- Generating voiceovers ---');
+  for (const video of videosData) {
+    if (video.quote && !video.quote.includes('[Add quote')) {
+      await generateVoiceover(video.quote, video.slug);
+    }
+  }
+
+  console.log('\n✓ Sync complete.');
 }
 
-syncVideos();
+syncVideos().catch((error) => {
+  console.error('Sync failed:', error);
+  process.exit(1);
+});

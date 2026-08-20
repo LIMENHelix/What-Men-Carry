@@ -134,7 +134,7 @@ function syncVideos() {
       const newVideo = {
         slug,
         file: `${slug}.mp4`,
-        title: `[Add title here] "${slug}"`,
+        quote: `[Add quote here] "${slug}"`,
         theme: '[Add theme here]',
         poster: `/posters/${slug}.jpg`,
         youtubeId: '',
@@ -144,7 +144,7 @@ function syncVideos() {
       videosData.push(newVideo);
       newVideosAdded++;
 
-      console.log(`→ Added to videos.json (edit the title and theme)`);
+      console.log(`→ Added to videos.json (edit the quote and theme)`);
     }
   });
 

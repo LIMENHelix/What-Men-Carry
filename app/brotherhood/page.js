@@ -1,5 +1,10 @@
 import Link from 'next/link';
-import events from '@/content/events.json';
+import fs from 'fs';
+import path from 'path';
+
+const events = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), 'content/events.json'), 'utf-8')
+);
 
 export default function Brotherhood() {
   const upcomingEvents = events.filter(

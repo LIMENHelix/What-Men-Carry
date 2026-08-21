@@ -1,5 +1,10 @@
 import VideoCard from '@/components/VideoCard';
-import videos from '@/content/videos.json';
+import fs from 'fs';
+import path from 'path';
+
+const videos = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), 'content/videos.json'), 'utf-8')
+);
 
 export default function Series() {
   return (

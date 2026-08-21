@@ -1,11 +1,7 @@
 import Link from 'next/link';
 import VideoCard from '@/components/VideoCard';
-import fs from 'fs';
-import path from 'path';
 
-const videos = JSON.parse(
-  fs.readFileSync(path.join(process.cwd(), 'content/videos.json'), 'utf-8')
-);
+const videos = require('@/content/videos.json');
 
 export default function Home() {
   const featured = videos[0];

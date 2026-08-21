@@ -1,7 +1,8 @@
 {
   "name": "what-men-carry",
   "version": "1.0.0",
-  "description": "What Men Carry - A men's mental health platform by LIMEN Helix",
+  "description": "What Men Carry — LIMEN Helix's platform for men's mental health through cinematic video storytelling",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,15 +11,16 @@
     "sync-videos": "node scripts/sync-videos.js"
   },
   "dependencies": {
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "next": "^14.2.0",
+    "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.41",
-    "tailwindcss": "^3.4.10",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^15.0.0"
+    "typescript": "^5.4.0",
+    "@types/react": "^18.3.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.2.0"
   }
 }

@@ -1,20 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
-    formats: ['image/avif', 'image/webp'],
+    unoptimized: true,
   },
-  headers: async () => {
-    return [
-      {
-        source: '/public/videos/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ];
+  webpack: (config, { isServer }) => {
+    config.externals.push('fsevents');
+    return config;
   },
 };
 

@@ -7,37 +7,24 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: {
-          900: '#0a0a0a',
-          800: '#1a1a1a',
-          700: '#2a2a2a',
-          600: '#3a3a3a',
-        },
-        steel: '#8b9dc3',
+        black: '#0a0a0a',
+        steel: '#4a5568',
         amber: '#d4a574',
+        gray: {
+          900: '#111111',
+          800: '#1a1a1a',
+          700: '#2d2d2d',
+          600: '#404040',
+          500: '#595959',
+          400: '#7a7a7a',
+          300: '#a3a3a3',
+          200: '#d1d5db',
+          100: '#f3f4f6',
+        },
       },
       fontFamily: {
-        serif: ['Georgia', 'serif'],
-        condensed: ['Courier New', 'monospace'],
-      },
-      typography: {
-        DEFAULT: {
-          css: {
-            color: '#e5e5e5',
-            a: {
-              color: '#d4a574',
-              '&:hover': {
-                color: '#e5a580',
-              },
-            },
-            strong: {
-              color: '#f5f5f5',
-            },
-            code: {
-              color: '#d4a574',
-            },
-          },
-        },
+        serif: ['Georgia', 'Garamond', 'serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
       },
     },
   },

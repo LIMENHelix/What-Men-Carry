@@ -1,26 +1,15 @@
-[
-  {
-    "title": "Warrior Boot Camp",
-    "city": "Austin, TX",
-    "date": "2026-09-15",
-    "time": "7:00 AM",
-    "description": "Full-day intensive. Physical challenge, honest talk, men who get it.",
-    "link": "#"
-  },
-  {
-    "title": "Group Run",
-    "city": "Denver, CO",
-    "date": "2026-09-10",
-    "time": "6:30 AM",
-    "description": "5K run every Saturday. No pace requirements. Come as you are.",
-    "link": "#"
-  },
-  {
-    "title": "Talk Space - NYC",
-    "city": "New York, NY",
-    "date": "2026-09-12",
-    "time": "7:00 PM",
-    "description": "Evening meetup. Coffee and conversation. All men welcome.",
-    "link": "#"
-  }
-]
+{
+  "events": [
+    {
+      "id": "example-run-kc",
+      "title": "Weekly Thursday Run — Kansas City",
+      "type": "run",
+      "location": "Kansas City, MO",
+      "date": "2026-08-21",
+      "time": "6:00 PM",
+      "description": "Weekly running group. All paces welcome.",
+      "contact": "contact@example.com",
+      "rsvp": "https://example.com"
+    }
+  ]
+}

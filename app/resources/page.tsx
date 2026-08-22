@@ -1,10 +1,12 @@
+'use client';
+
 export default function ResourcesPage() {
   return (
     <div className="min-h-screen">
       {/* Hero - Crisis focus */}
       <section className="bg-gradient-to-b from-gray-900 to-black py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-5xl font-serif mb-4">You Don't Have to Carry This Alone</h1>
+          <h1 className="text-5xl font-serif mb-4">You Do Not Have to Carry This Alone</h1>
           <p className="text-gray-400 text-lg max-w-2xl">
             Crisis resources. Real help. Confidential. Free.
           </p>
@@ -19,7 +21,7 @@ export default function ResourcesPage() {
           {/* 988 */}
           <div className="bg-gradient-to-br from-amber-900 to-gray-900 border-2 border-amber-500 rounded-lg p-8">
             <h3 className="font-serif text-2xl mb-2 text-amber-300">988</h3>
-            <p className="text-gray-300 mb-4">Suicide & Crisis Lifeline</p>
+            <p className="text-gray-300 mb-4">Suicide and Crisis Lifeline</p>
             <div className="space-y-2 text-sm">
               <p><strong>Call:</strong> <a href="tel:988" className="crisis-link">988</a></p>
               <p><strong>Text:</strong> <a href="sms:988" className="crisis-link">988</a></p>
@@ -62,7 +64,7 @@ export default function ResourcesPage() {
 
       {/* Organizations */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <h2 className="text-3xl font-serif mb-8">Men's Mental Health Organizations</h2>
+        <h2 className="text-3xl font-serif mb-8">Mens Mental Health Organizations</h2>
 
         <div className="grid md:grid-cols-2 gap-6">
           {[
@@ -72,17 +74,17 @@ export default function ResourcesPage() {
               url: 'https://www.mankindinitiative.org',
             },
             {
-              name: 'Men's Resource Center',
+              name: 'Mens Resource Center',
               desc: 'Community resources and connection',
               url: 'https://www.mensresourcecenter.org',
             },
             {
               name: 'The Good Men Project',
-              desc: 'Articles and community around men\'s issues',
+              desc: 'Articles and community around mens issues',
               url: 'https://goodmenproject.com',
             },
             {
-              name: 'It\'s OK to Talk',
+              name: 'It is OK to Talk',
               desc: 'Peer support networks for men',
               url: 'https://www.itsokaytonotbeokay.co.uk',
             },

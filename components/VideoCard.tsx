@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { loadStripe } from '@stripe/stripe-js';
 
 interface VideoCardProps {
   slug: string;
@@ -60,11 +59,7 @@ export default function VideoCard({ slug, file, title, theme, price = 0.50, quot
       const { sessionId, error } = await response.json();
       if (error) throw new Error(error);
 
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-      if (!stripe) throw new Error('Stripe failed to load');
-
-      const result = await stripe.redirectToCheckout({ sessionId });
-      if (result.error) throw new Error(result.error.message);
+      window.location.href = `https://checkout.stripe.com/pay/${sessionId}`;
     } catch (error) {
       console.error('Checkout error:', error);
       alert(`Error: ${error instanceof Error ? error.message : 'Checkout failed'}`);

@@ -21,7 +21,7 @@ export default function TalkPage() {
     e.preventDefault();
     // TODO: Connect to form handler
     console.log('Form submitted:', formData);
-    alert('Thank you. We'll be in touch.');
+    alert('Thank you. We will be in touch.');
     setFormData({ name: '', email: '', city: '', what_brings_you: '' });
   };
 

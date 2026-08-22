@@ -1,10 +1,27 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+export const dynamic = 'force-dynamic';
+
+let stripe: Stripe | null = null;
+
+function getStripe(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  if (!stripe) stripe = new Stripe(key);
+  return stripe;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const stripeClient = getStripe();
+    if (!stripeClient) {
+      return NextResponse.json(
+        { error: "Purchases aren't available yet." },
+        { status: 503 }
+      );
+    }
+
     const { slug, title, price } = await request.json();
 
     if (!slug || !title || !price) {
@@ -14,7 +31,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {

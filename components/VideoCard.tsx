@@ -123,13 +123,15 @@ export default function VideoCard({ slug, file, title, theme, price = 0.50, quot
           </div>
         </div>
 
-        <button
-          onClick={handleBuyClick}
-          disabled={isLoading}
-          className="w-full bg-amber-600 hover:bg-amber-500 disabled:bg-gray-600 text-black px-4 py-2 rounded font-semibold text-sm transition-all duration-200"
-        >
-          {isLoading ? 'Loading...' : `Buy $${price.toFixed(2)}`}
-        </button>
+        {process.env.NEXT_PUBLIC_PURCHASES_ENABLED === 'true' && (
+          <button
+            onClick={handleBuyClick}
+            disabled={isLoading}
+            className="w-full bg-amber-600 hover:bg-amber-500 disabled:bg-gray-600 text-black px-4 py-2 rounded font-semibold text-sm transition-all duration-200"
+          >
+            {isLoading ? 'Loading...' : `Buy $${price.toFixed(2)}`}
+          </button>
+        )}
       </div>
     </div>
   );

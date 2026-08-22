@@ -6,16 +6,20 @@ interface Video {
   slug: string;
   file: string;
   title: string;
+  quote?: string;
+  audio?: string;
   theme: string;
   youtubeId?: string;
+  price?: number;
 }
 
 interface VideoGridProps {
   videos: Video[];
   filterTheme?: string;
+  onVideoEnd?: (index: number) => void;
 }
 
-export default function VideoGrid({ videos, filterTheme }: VideoGridProps) {
+export default function VideoGrid({ videos, filterTheme, onVideoEnd }: VideoGridProps) {
   const filtered = filterTheme
     ? videos.filter((v) => v.theme === filterTheme)
     : videos;
@@ -30,8 +34,12 @@ export default function VideoGrid({ videos, filterTheme }: VideoGridProps) {
 
   return (
     <div className="video-grid">
-      {filtered.map((video) => (
-        <VideoCard key={video.slug} {...video} />
+      {filtered.map((video, index) => (
+        <VideoCard
+          key={video.slug}
+          {...video}
+          onVideoEnd={() => onVideoEnd?.(index)}
+        />
       ))}
     </div>
   );

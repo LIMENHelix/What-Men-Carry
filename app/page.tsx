@@ -1,8 +1,26 @@
+'use client';
+
+import { useState, useRef } from 'react';
+import VideoCard from '@/components/VideoCard';
 import VideoGrid from '@/components/VideoGrid';
 import videosData from '@/content/videos.json';
 
 export default function Home() {
-  const featuredVideo = videosData.videos[0];
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videosRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const handleFeaturedVideoEnd = () => {
+    setCurrentVideoIndex((prev) => (prev + 1) % videosData.videos.length);
+  };
+
+  const handleGridVideoEnd = (index: number) => {
+    setCurrentVideoIndex((prev) => {
+      const nextIndex = prev + 1;
+      return nextIndex >= videosData.videos.length ? 0 : nextIndex;
+    });
+  };
+
+  const currentVideo = videosData.videos[currentVideoIndex];
 
   return (
     <div>
@@ -16,21 +34,20 @@ export default function Home() {
             Stories about the weight. Mental health. Real voices. A community.
           </p>
 
-          {/* Featured video in hero */}
-          {featuredVideo && (
-            <div className="mt-12 rounded-lg overflow-hidden">
-              <video
-                className="w-full max-w-2xl aspect-video bg-black"
-                controls
-                playsInline
-                preload="metadata"
-                poster={`/videos/${featuredVideo.slug}-poster.jpg`}
-              >
-                <source src={`/videos/${featuredVideo.file}`} type="video/mp4" />
-              </video>
-              <div className="mt-3">
-                <p className="font-serif text-lg text-gray-200">{featuredVideo.title}</p>
-              </div>
+          {/* Featured video carousel */}
+          {currentVideo && (
+            <div className="mt-12 w-full max-w-2xl">
+              <VideoCard
+                slug={currentVideo.slug}
+                file={currentVideo.file}
+                title={currentVideo.title}
+                quote={currentVideo.quote}
+                theme={currentVideo.theme}
+                audio={currentVideo.audio}
+                youtubeId={currentVideo.youtubeId}
+                onVideoEnd={handleFeaturedVideoEnd}
+                isFeatured={true}
+              />
             </div>
           )}
         </div>
@@ -42,7 +59,7 @@ export default function Home() {
           <h2 className="text-3xl font-serif mb-2">The Collection</h2>
           <p className="text-gray-400">More stories. All themes.</p>
         </div>
-        <VideoGrid videos={videosData.videos} />
+        <VideoGrid videos={videosData.videos} onVideoEnd={handleGridVideoEnd} />
       </section>
 
       {/* CTA */}

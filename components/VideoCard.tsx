@@ -8,21 +8,24 @@ interface VideoCardProps {
   file: string;
   title: string;
   theme: string;
+  quote?: string;
+  audio?: string;
   youtubeId?: string;
 }
 
-export default function VideoCard({ slug, file, title, theme, youtubeId }: VideoCardProps) {
+export default function VideoCard({ slug, file, title, theme, quote, audio, youtubeId }: VideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && videoRef.current) {
-          videoRef.current.play().catch(() => {
-            // autoplay may be blocked, that's ok
-          });
+          videoRef.current.play().catch(() => {});
+          audioRef.current?.play().catch(() => {});
         } else if (!entry.isIntersecting && videoRef.current) {
           videoRef.current.pause();
+          audioRef.current?.pause();
         }
       });
     });
@@ -34,20 +37,45 @@ export default function VideoCard({ slug, file, title, theme, youtubeId }: Video
     return () => observer.disconnect();
   }, []);
 
+  const handleVideoPlay = () => {
+    audioRef.current?.play().catch(() => {});
+  };
+
+  const handleVideoPause = () => {
+    audioRef.current?.pause();
+  };
+
   return (
     <div className="video-card">
-      <div className="relative bg-gray-900 rounded-lg overflow-hidden">
+      <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video">
         <video
           ref={videoRef}
-          className="w-full aspect-video bg-black"
-          muted
+          className="w-full h-full bg-black"
           loop
           playsInline
           preload="metadata"
           poster={`/videos/${slug}-poster.jpg`}
+          onPlay={handleVideoPlay}
+          onPause={handleVideoPause}
         >
           <source src={`/videos/${file}`} type="video/mp4" />
         </video>
+
+        {audio && (
+          <audio
+            ref={audioRef}
+            src={`/videos/${audio}`}
+            loop
+            preload="metadata"
+          />
+        )}
+
+        {/* Quote overlay */}
+        {quote && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black via-transparent to-transparent p-6 text-center">
+            <p className="font-serif text-lg md:text-xl text-white leading-relaxed drop-shadow-lg">{quote}</p>
+          </div>
+        )}
 
         {/* Play indicator on hover */}
         <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black/40 flex items-center justify-center cursor-pointer">

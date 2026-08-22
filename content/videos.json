@@ -2,8 +2,10 @@
   "videos": [
     {
       "slug": "she-held-his-hand",
-      "file": "she-held-his-hand.mp4",
+      "file": "GROKWMC1.mp4",
       "title": "She held his hand. He held the rest.",
+      "quote": "She held his hand. He held the rest.",
+      "audio": "she-held-his-hand-audio.mp3",
       "theme": "responsibility",
       "date": "2026-08-20",
       "youtubeId": ""

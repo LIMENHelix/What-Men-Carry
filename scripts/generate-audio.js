@@ -8,21 +8,23 @@ if (!API_KEY) {
   process.exit(1);
 }
 
-const videosPath = path.join(__dirname, '../public/videos.json');
+const videosPath = path.join(__dirname, '../content/videos.json');
 const outputDir = path.join(__dirname, '../public/videos');
+const VOICE = 'perseus'; // Deep, calm male voice suitable for storytelling
 
 async function generateAudio(text, filename) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      model: 'grok-2-voice-latest',
-      input: text,
-      voice: 'onyx',
+      voice: VOICE,
+      language: 'en',
+      text: text,
+      format: 'mp3',
     });
 
     const options = {
       hostname: 'api.x.ai',
       port: 443,
-      path: '/v1/audio/speech',
+      path: '/v1/tts',
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
@@ -45,7 +47,8 @@ async function generateAudio(text, filename) {
           console.log(`✓ Generated: ${filename}`);
           resolve();
         } else {
-          reject(new Error(`API error: ${res.statusCode} - ${res.statusMessage}`));
+          const error = audioData.toString().slice(0, 200);
+          reject(new Error(`API error: ${res.statusCode} - ${error}`));
         }
       });
     });
@@ -78,18 +81,18 @@ async function main() {
       return;
     }
 
-    console.log(`Generating audio for ${videos.length} video(s)...`);
+    console.log(`Generating audio for ${videos.length} video(s) using voice: ${VOICE}...`);
 
     for (const video of videos) {
       if (!video.quote || !video.audio) {
-        console.warn(`⚠ Skipping ${video.name}: missing quote or audio field`);
+        console.warn(`⚠ Skipping ${video.file}: missing quote or audio field`);
         continue;
       }
 
       try {
         await generateAudio(video.quote, video.audio);
       } catch (error) {
-        console.error(`✗ Failed to generate audio for ${video.name}: ${error.message}`);
+        console.error(`✗ Failed to generate audio for ${video.file}: ${error.message}`);
       }
     }
 

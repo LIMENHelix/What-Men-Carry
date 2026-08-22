@@ -11,11 +11,14 @@
     "sync-videos": "node scripts/sync-videos.js"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.8.2",
+    "@stripe/stripe-js": "^9.14.0",
     "autoprefixer": "^10.5.4",
     "next": "^14.2.0",
     "postcss": "^8.4.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
+    "stripe": "^22.5.0",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {

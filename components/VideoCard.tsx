@@ -1,21 +1,24 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { loadStripe } from '@stripe/stripe-js';
 
 interface VideoCardProps {
   slug: string;
   file: string;
   title: string;
   theme: string;
+  price?: number;
   quote?: string;
   audio?: string;
   youtubeId?: string;
 }
 
-export default function VideoCard({ slug, file, title, theme, quote, audio, youtubeId }: VideoCardProps) {
+export default function VideoCard({ slug, file, title, theme, price = 0.50, quote, audio, youtubeId }: VideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -43,6 +46,31 @@ export default function VideoCard({ slug, file, title, theme, quote, audio, yout
 
   const handleVideoPause = () => {
     audioRef.current?.pause();
+  };
+
+  const handleBuyClick = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, title, price }),
+      });
+
+      const { sessionId, error } = await response.json();
+      if (error) throw new Error(error);
+
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+      if (!stripe) throw new Error('Stripe failed to load');
+
+      const result = await stripe.redirectToCheckout({ sessionId });
+      if (result.error) throw new Error(result.error.message);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Checkout failed'}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,16 +115,26 @@ export default function VideoCard({ slug, file, title, theme, quote, audio, yout
         </div>
       </div>
 
-      <div className="mt-3">
-        <h3 className="video-title">{title}</h3>
-        <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-          <span className="capitalize px-2 py-1 bg-gray-800 rounded">{theme}</span>
-          {youtubeId && (
-            <Link href={`https://youtube.com/watch?v=${youtubeId}`} target="_blank" className="hover:text-amber-500 transition">
-              Watch on YouTube
-            </Link>
-          )}
+      <div className="mt-4 space-y-3">
+        <div>
+          <h3 className="video-title">{title}</h3>
+          <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+            <span className="capitalize px-2 py-1 bg-gray-800 rounded">{theme}</span>
+            {youtubeId && (
+              <Link href={`https://youtube.com/watch?v=${youtubeId}`} target="_blank" className="hover:text-amber-500 transition">
+                Watch on YouTube
+              </Link>
+            )}
+          </div>
         </div>
+
+        <button
+          onClick={handleBuyClick}
+          disabled={isLoading}
+          className="w-full bg-amber-600 hover:bg-amber-500 disabled:bg-gray-600 text-black px-4 py-2 rounded font-semibold text-sm transition-all duration-200"
+        >
+          {isLoading ? 'Loading...' : `Buy $${price.toFixed(2)}`}
+        </button>
       </div>
     </div>
   );

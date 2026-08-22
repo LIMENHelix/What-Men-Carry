@@ -2,11 +2,42 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const API_KEY = process.env.XAI_API_KEY;
-if (!API_KEY) {
-  console.error('Error: XAI_API_KEY environment variable not set');
+// Load .env.local manually
+const envLocalPath = path.join(__dirname, '..', '.env.local');
+if (fs.existsSync(envLocalPath)) {
+  const envContent = fs.readFileSync(envLocalPath, 'utf-8');
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^([^=]+)=(.*)$/);
+    if (match) {
+      const key = match[1].trim();
+      const value = match[2].trim().replace(/^["']|["']$/g, '');
+      if (key && !process.env[key]) {
+        process.env[key] = value;
+      }
+    }
+  });
+}
+
+// Load API key with fallback chain
+function loadApiKey() {
+  if (process.env.XAI_API_KEY) {
+    return { key: process.env.XAI_API_KEY, source: '.env.local (or process.env)' };
+  }
+  if (process.env.GROK_API_KEY) {
+    return { key: process.env.GROK_API_KEY, source: 'process.env GROK_API_KEY' };
+  }
+  return null;
+}
+
+const apiKeyResult = loadApiKey();
+if (!apiKeyResult || !apiKeyResult.key) {
+  console.error('❌ Error: XAI_API_KEY not found');
+  console.error('   Checked: .env.local, process.env.XAI_API_KEY, process.env.GROK_API_KEY');
   process.exit(1);
 }
+
+const API_KEY = apiKeyResult.key;
+console.log(`✓ XAI_API_KEY loaded from ${apiKeyResult.source}`);
 
 const videosPath = path.join(__dirname, '../content/videos.json');
 const outputDir = path.join(__dirname, '../public/videos');

@@ -72,8 +72,9 @@ export default function VideoCard({ slug, file, title, theme, price = 0.50, quot
 
   const handlePlay = () => {
     setIsPlaying(true);
-    if (!isMuted) {
-      audioRef.current?.play().catch(() => {});
+    if (!isMuted && audioRef.current) {
+      audioRef.current.currentTime = videoRef.current?.currentTime || 0;
+      audioRef.current.play().catch(() => {});
     }
   };
 
@@ -83,8 +84,11 @@ export default function VideoCard({ slug, file, title, theme, price = 0.50, quot
   };
 
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
+    if (videoRef.current && audioRef.current && !isMuted) {
       setProgress((videoRef.current.currentTime / videoRef.current.duration) * 100 || 0);
+      if (Math.abs(audioRef.current.currentTime - videoRef.current.currentTime) > 0.1) {
+        audioRef.current.currentTime = videoRef.current.currentTime;
+      }
     }
   };
 
@@ -150,14 +154,16 @@ export default function VideoCard({ slug, file, title, theme, price = 0.50, quot
           </div>
         )}
 
-        {/* Custom controls */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="w-12 h-12 rounded-full border-2 border-amber-500 flex items-center justify-center">
-            <svg className="w-5 h-5 text-amber-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-            </svg>
+        {/* Play button - always visible when paused, hidden when playing */}
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-12 h-12 rounded-full border-2 border-amber-500 flex items-center justify-center bg-black/30">
+              <svg className="w-5 h-5 text-amber-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+              </svg>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Mute button - bottom right */}
         <button
